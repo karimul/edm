@@ -27,7 +27,7 @@ def generate_image_grid(
     network_pkl, dest_path,
     seed=0, gridw=8, gridh=8, device=torch.device('cuda'),
     num_steps=18, sigma_min=0.002, sigma_max=80, rho=7,
-    S_churn=0, S_min=0, S_max=float('inf'), S_noise=1.002,
+    S_churn=0, S_min=0, S_max=float('inf'), S_noise=1, cyclical=False,
 ):
     batch_size = gridw * gridh
     torch.manual_seed(seed)
@@ -58,8 +58,9 @@ def generate_image_grid(
     for i, (t_cur, t_next) in tqdm.tqdm(list(enumerate(zip(t_steps[:-1], t_steps[1:]))), unit='step'): # 0, ..., N-1
         x_cur = x_next
 
-        # Adaptive step size of noise with cyclical
-        S_noise = (S_noise -1) + adjust_learning_rate(i, total_epoch=10, lr0=S_noise -1)
+        if cyclical is True:
+            # Adaptive step size of noise with cyclical
+            S_noise = 1 + adjust_learning_rate(i, total_epoch=10, lr0=S_noise - 1)
 
         # Increase noise temporarily.
         gamma = min(S_churn / num_steps, np.sqrt(2) - 1) if S_min <= t_cur <= S_max else 0
@@ -90,10 +91,10 @@ def generate_image_grid(
 
 def main():
     model_root = 'https://nvlabs-fi-cdn.nvidia.com/edm/pretrained'
-    generate_image_grid(f'{model_root}/edm-cifar10-32x32-cond-vp.pkl',   'cifar10-32x32.png',  num_steps=18) # FID = 1.79, NFE = 35
-    generate_image_grid(f'{model_root}/edm-ffhq-64x64-uncond-vp.pkl',    'ffhq-64x64.png',     num_steps=40) # FID = 2.39, NFE = 79
-    generate_image_grid(f'{model_root}/edm-afhqv2-64x64-uncond-vp.pkl',  'afhqv2-64x64.png',   num_steps=40) # FID = 1.96, NFE = 79
-    generate_image_grid(f'{model_root}/edm-imagenet-64x64-cond-adm.pkl', 'imagenet-64x64.png', num_steps=256, S_churn=40, S_min=0.05, S_max=50, S_noise=1.003) # FID = 1.36, NFE = 511
+    generate_image_grid(f'{model_root}/edm-cifar10-32x32-cond-vp.pkl',   'cifar10-32x32.png',  num_steps=18, S_noise=1.002, cyclical=True) # FID = 1.79, NFE = 35
+    generate_image_grid(f'{model_root}/edm-ffhq-64x64-uncond-vp.pkl',    'ffhq-64x64.png',     num_steps=40, S_noise=1.002, cyclical=True) # FID = 2.39, NFE = 79
+    generate_image_grid(f'{model_root}/edm-afhqv2-64x64-uncond-vp.pkl',  'afhqv2-64x64.png',   num_steps=40, S_noise=1.002, cyclical=True) # FID = 1.96, NFE = 79
+    generate_image_grid(f'{model_root}/edm-imagenet-64x64-cond-adm.pkl', 'imagenet-64x64.png', num_steps=256, S_churn=40, S_min=0.05, S_max=50, S_noise=1.003, cyclical=True) # FID = 1.36, NFE = 511
 
 #----------------------------------------------------------------------------
 
