@@ -51,7 +51,7 @@ def edm_sampler(
         if cyclical is True:
             # Adaptive step size of noise with cyclical
             S_noise_new = 1 + adjust_learning_rate(i, total_epoch=10, lr0=S_noise - 1)
-            print("adjust_learning_rate(i, total_epoch=10, lr0=S_noise - 1) = ", adjust_learning_rate(i, total_epoch=10, lr0=S_noise - 1))
+            # print("adjust_learning_rate(i, total_epoch=10, lr0=S_noise - 1) = ", adjust_learning_rate(i, total_epoch=10, lr0=S_noise - 1))
 
         # Increase noise temporarily.
         gamma = min(S_churn / num_steps, np.sqrt(2) - 1) if S_min <= t_cur <= S_max else 0
