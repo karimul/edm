@@ -126,6 +126,9 @@ To compute Fr&eacute;chet inception distance (FID) for a given model and sampler
 torchrun --standalone --nproc_per_node=1 generate.py --outdir=fid-tmp --seeds=0-49999 --subdirs \
     --network=https://nvlabs-fi-cdn.nvidia.com/edm/pretrained/edm-cifar10-32x32-cond-vp.pkl
 
+torchrun --standalone --nproc_per_node=1 generate.py --outdir=fid-tmp --seeds=0-49999 --subdirs \
+    --network=https://nvlabs-fi-cdn.nvidia.com/edm/pretrained/edm-cifar10-32x32-cond-vp.pkl --cyclical --S_noise=1.002 --steps=10
+
 # Calculate FID
 torchrun --standalone --nproc_per_node=1 fid.py calc --images=fid-tmp \
     --ref=https://nvlabs-fi-cdn.nvidia.com/edm/fid-refs/cifar10-32x32.npz
