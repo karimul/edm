@@ -277,6 +277,8 @@ def main(network_pkl, outdir, subdirs, seeds, class_idx, max_batch_size, device=
     if dist.get_rank() != 0:
         torch.distributed.barrier()
 
+    # Print params
+    dist.print0(**sampler_kwargs)
     # Load network.
     dist.print0(f'Loading network from "{network_pkl}"...')
     with dnnlib.util.open_url(network_pkl, verbose=(dist.get_rank() == 0)) as f:
