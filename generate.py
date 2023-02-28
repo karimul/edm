@@ -52,6 +52,7 @@ def edm_sampler(
             # Adaptive step size of noise with cyclical
             # S_noise_new = 1 + adjust_learning_rate(i, total_epoch=10, lr0=S_noise - 1)
             S_noise_new = adjust_learning_rate(i, total_epoch=10, lr0=S_noise)
+            print(f"S_noise_new: {S_noise_new}")
             # print("adjust_learning_rate(i, total_epoch=10, lr0=S_noise - 1) = ", adjust_learning_rate(i, total_epoch=10, lr0=S_noise - 1))
         else:
             S_noise_new = S_noise
@@ -66,7 +67,7 @@ def edm_sampler(
         d_cur = (x_hat - denoised) / t_hat
         x_next = x_hat + (t_next - t_hat) * d_cur
 
-        # Apply 2nd order correction.
+        # Apply 2nd order correction. Heun
         if i < num_steps - 1:
             denoised = net(x_next, t_next, class_labels).to(torch.float64)
             d_prime = (x_next - denoised) / t_next
