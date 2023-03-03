@@ -9,7 +9,7 @@ subprocess.run("torchrun --standalone --nproc_per_node=1 generate.py --outdir=fi
     --network=https://nvlabs-fi-cdn.nvidia.com/edm/pretrained/edm-imagenet-64x64-cond-adm.pkl \
     --steps=256", shell=True, check=True, stdout=f)
 subprocess.run("torchrun --standalone --nproc_per_node=1 fid.py calc --images=fid-tmp \
-    --ref=https://nvlabs-fi-cdn.nvidia.com/edm/fid-refs/afhqv2-64x64.npz", shell=True, check=True, stdout=f)
+    --ref=https://nvlabs-fi-cdn.nvidia.com/edm/fid-refs/imagenet-64x64.npz", shell=True, check=True, stdout=f)
 
 subprocess.run("rm -rf fid-tmp/", shell=True, check=True)
 # subprocess.run("torchrun --standalone --nproc_per_node=1 generate.py --outdir=fid-tmp --seeds=50000-99999 --subdirs \
@@ -19,7 +19,7 @@ subprocess.run("torchrun --standalone --nproc_per_node=1 generate.py --outdir=fi
     --network=https://nvlabs-fi-cdn.nvidia.com/edm/pretrained/edm-imagenet-64x64-cond-adm.pkl \
     --steps=256", shell=True, check=True, stdout=f)
 subprocess.run("torchrun --standalone --nproc_per_node=1 fid.py calc --images=fid-tmp \
-    --ref=https://nvlabs-fi-cdn.nvidia.com/edm/fid-refs/afhqv2-64x64.npz", shell=True, check=True, stdout=f)
+    --ref=https://nvlabs-fi-cdn.nvidia.com/edm/fid-refs/imagenet-64x64.npz", shell=True, check=True, stdout=f)
 
 subprocess.run("rm -rf fid-tmp/", shell=True, check=True)
 # subprocess.run("torchrun --standalone --nproc_per_node=1 generate.py --outdir=fid-tmp --seeds=100000-149999 --subdirs \
@@ -29,4 +29,4 @@ subprocess.run("torchrun --standalone --nproc_per_node=1 generate.py --outdir=fi
     --network=https://nvlabs-fi-cdn.nvidia.com/edm/pretrained/edm-imagenet-64x64-cond-adm.pkl \
     --steps=256", shell=True, check=True, stdout=f)
 subprocess.run("torchrun --standalone --nproc_per_node=1 fid.py calc --images=fid-tmp \
-    --ref=https://nvlabs-fi-cdn.nvidia.com/edm/fid-refs/afhqv2-64x64.npz", shell=True, check=True, stdout=f)
+    --ref=https://nvlabs-fi-cdn.nvidia.com/edm/fid-refs/imagenet-64x64.npz", shell=True, check=True, stdout=f)
