@@ -284,6 +284,7 @@ def main(network_pkl, outdir, subdirs, seeds, class_idx, max_batch_size, device=
         torch.distributed.barrier()
 
     # Print params
+    dist.print0(f"seeds: {seeds}")
     dist.print0(sampler_kwargs)
     # Load network.
     dist.print0(f'Loading network from "{network_pkl}"...')
