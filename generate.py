@@ -23,7 +23,6 @@ from torch_utils import distributed as dist
 # Proposed EDM sampler (Algorithm 2).
 
 def adjust_learning_rate(iter:int, total_epoch:int=100, M:int=3, lr0:float=0.007):
-    print(f"total_epoch: {iter} {total_epoch} {M}")
     cos_inner = np.pi * (iter % (total_epoch // M))
     cos_inner /= total_epoch // M
     cos_out = np.cos(cos_inner) + 1
@@ -38,7 +37,7 @@ def edm_sampler(
     # Adjust noise levels based on what's supported by the network.
     sigma_min = max(sigma_min, net.sigma_min)
     sigma_max = min(sigma_max, net.sigma_max)
-    scale = 1.0
+    total_epoch = num_steps
 
     # Time step discretization.
     step_indices = torch.arange(num_steps, dtype=torch.float64, device=latents.device)
@@ -55,7 +54,7 @@ def edm_sampler(
         t_hat = net.round_sigma(t_cur + gamma * t_cur)
         if cyclical is True:
             # Adaptive step size of noise with cyclical
-            S_noise_new = adjust_learning_rate(i+1, total_epoch=num_steps, lr0=S_noise)
+            S_noise_new = adjust_learning_rate(i+1, total_epoch=total_epoch, lr0=S_noise)
             x_hat = x_cur + S_noise_new * torch.randn_like(x_cur)
         else:
             x_hat = x_cur + (t_hat ** 2 - t_cur ** 2).sqrt() * S_noise * torch.randn_like(x_cur)
