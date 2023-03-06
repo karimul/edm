@@ -23,7 +23,6 @@ from torch_utils import distributed as dist
 # Proposed EDM sampler (Algorithm 2).
 
 def adjust_learning_rate(iter:int, total_epoch:int=100, M:int=3, lr0:float=0.007):
-    print(f"M {M}")
     cos_inner = np.pi * (iter % (total_epoch // M))
     cos_inner /= total_epoch // M
     cos_out = np.cos(cos_inner) + 1
@@ -50,30 +49,26 @@ def edm_sampler(
     for i, (t_cur, t_next) in enumerate(zip(t_steps[:-1], t_steps[1:])): # 0, ..., N-1
         x_cur = x_next
 
-        # if cyclical is True:
+        if cyclical is True:
             # Adaptive step size of noise with cyclical
             # S_noise_new = 1 + adjust_learning_rate(i, total_epoch=10, lr0=S_noise - 1)
-            # S_noise_new = adjust_learning_rate(i, total_epoch=num_steps, lr0=S_noise)
+            S_noise_new = adjust_learning_rate(i, total_epoch=num_steps, lr0=S_noise)
             
             # S_noise_new = randn_like(x_cur) + adjust_learning_rate(i, total_epoch=10, M=10, lr0=S_noise) * randn_like(x_cur)
             # S_noise_new = S_noise * randn_like(x_cur)
             # scale = adjust_learning_rate(i, total_epoch=10, lr0=S_noise)
             
             # print("adjust_learning_rate(i, total_epoch=10, lr0=S_noise - 1) = ", adjust_learning_rate(i, total_epoch=10, lr0=S_noise - 1))
-        # else:
-        #     S_noise_new = S_noise
+        else:
+            S_noise_new = S_noise
         # print(f"S_noise_new: {S_noise_new}")
 
         # Increase noise temporarily.
         gamma = min(S_churn / num_steps, np.sqrt(2) - 1) if S_min <= t_cur <= S_max else 0
         t_hat = net.round_sigma(t_cur + gamma * t_cur)
+        # scaling = (t_hat ** 2 - t_cur ** 2).sqrt()
         # print(f"scaling: {scaling}, S_noise_new: {S_noise_new}, t_hat: {t_hat}, t_cur: {t_cur}, gamma: {gamma}")
-        if cyclical is True:
-            # Adaptive step size of noise with cyclical
-            S_noise_new = adjust_learning_rate(i, total_epoch=num_steps, lr0=S_noise)
-            x_hat = x_cur + S_noise_new * torch.randn_like(x_cur)
-        else:
-            x_hat = x_cur + (t_hat ** 2 - t_cur ** 2).sqrt() * S_noise * torch.randn_like(x_cur)
+        x_hat = x_cur + S_noise_new  * randn_like(x_cur)
 
         # Euler step.
         denoised = net(x_hat, t_hat, class_labels).to(torch.float64)
