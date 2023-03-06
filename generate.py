@@ -23,8 +23,8 @@ from torch_utils import distributed as dist
 # Proposed EDM sampler (Algorithm 2).
 
 def adjust_learning_rate(iter:int, total_epoch:int=100, M:int=3, lr0:float=0.007):
-    cos_inner = np.pi * (iter % (total_epoch // M))
-    cos_inner /= total_epoch // M
+    cos_inner = np.pi * (iter % (total_epoch // 3))
+    cos_inner /= total_epoch // 3
     cos_out = np.cos(cos_inner) + 1
     lr = 0.5*cos_out*lr0
     return lr
