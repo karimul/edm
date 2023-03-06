@@ -37,6 +37,7 @@ def edm_sampler(
     # Adjust noise levels based on what's supported by the network.
     sigma_min = max(sigma_min, net.sigma_min)
     sigma_max = min(sigma_max, net.sigma_max)
+    scale = 1.0
 
     # Time step discretization.
     step_indices = torch.arange(num_steps, dtype=torch.float64, device=latents.device)
@@ -52,7 +53,10 @@ def edm_sampler(
             # Adaptive step size of noise with cyclical
             # S_noise_new = 1 + adjust_learning_rate(i, total_epoch=10, lr0=S_noise - 1)
             # S_noise_new = adjust_learning_rate(i, total_epoch=10, lr0=S_noise) * randn_like(x_cur)
-            S_noise_new = randn_like(x_cur) + adjust_learning_rate(i, total_epoch=10, M=10, lr0=S_noise) * randn_like(x_cur)
+            
+            # S_noise_new = randn_like(x_cur) + adjust_learning_rate(i, total_epoch=10, M=10, lr0=S_noise) * randn_like(x_cur)
+            S_noise_new = S_noise * randn_like(x_cur)
+            scale = adjust_learning_rate(i, total_epoch=10, lr0=S_noise)
             
             # print("adjust_learning_rate(i, total_epoch=10, lr0=S_noise - 1) = ", adjust_learning_rate(i, total_epoch=10, lr0=S_noise - 1))
         else:
@@ -62,7 +66,7 @@ def edm_sampler(
         # Increase noise temporarily.
         gamma = min(S_churn / num_steps, np.sqrt(2) - 1) if S_min <= t_cur <= S_max else 0
         t_hat = net.round_sigma(t_cur + gamma * t_cur)
-        x_hat = x_cur + (t_hat ** 2 - t_cur ** 2).sqrt() * S_noise_new 
+        x_hat = scale * x_cur + (t_hat ** 2 - t_cur ** 2).sqrt() * S_noise_new 
 
         # Euler step.
         denoised = net(x_hat, t_hat, class_labels).to(torch.float64)
