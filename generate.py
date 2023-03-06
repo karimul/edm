@@ -52,7 +52,7 @@ def edm_sampler(
         if cyclical is True:
             # Adaptive step size of noise with cyclical
             # S_noise_new = 1 + adjust_learning_rate(i, total_epoch=10, lr0=S_noise - 1)
-            S_noise_new = adjust_learning_rate(i, total_epoch=10, M=len(t_steps), lr0=S_noise)
+            S_noise_new = adjust_learning_rate(i, total_epoch=num_steps, M=num_steps/2, lr0=S_noise)
             
             # S_noise_new = randn_like(x_cur) + adjust_learning_rate(i, total_epoch=10, M=10, lr0=S_noise) * randn_like(x_cur)
             # S_noise_new = S_noise * randn_like(x_cur)
