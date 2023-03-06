@@ -67,7 +67,7 @@ def edm_sampler(
         gamma = min(S_churn / num_steps, np.sqrt(2) - 1) if S_min <= t_cur <= S_max else 0
         t_hat = net.round_sigma(t_cur + gamma * t_cur)
         scaling = (t_hat ** 2 - t_cur ** 2).sqrt()
-        print(f"scaling: {scaling}, S_noise_new: {S_noise_new}")
+        print(f"scaling: {scaling}, S_noise_new: {S_noise_new}, t_hat: {t_hat}, t_cur: {t_cur}, gamma: {gamma}")
         x_hat = x_cur + scaling * S_noise_new  * randn_like(x_cur)
 
         # Euler step.
