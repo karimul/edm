@@ -66,7 +66,6 @@ def edm_sampler(
         # Increase noise temporarily.
         gamma = min(S_churn / num_steps, np.sqrt(2) - 1) if S_min <= t_cur <= S_max else 0
         t_hat = net.round_sigma(t_cur + gamma * t_cur)
-        # scaling = (t_hat ** 2 - t_cur ** 2).sqrt()
         # print(f"scaling: {scaling}, S_noise_new: {S_noise_new}, t_hat: {t_hat}, t_cur: {t_cur}, gamma: {gamma}")
         if cyclical is True:
             # Adaptive step size of noise with cyclical
