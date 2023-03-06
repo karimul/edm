@@ -63,7 +63,7 @@ def generate_image_grid(
         t_hat = net.round_sigma(t_cur + gamma * t_cur)
         if cyclical is True:
             # Adaptive step size of noise with cyclical
-            S_noise_new = adjust_learning_rate(i, total_epoch=num_steps, lr0=S_noise)
+            S_noise_new = adjust_learning_rate(i+1, total_epoch=num_steps, lr0=S_noise)
             x_hat = x_cur + S_noise_new * torch.randn_like(x_cur)
         else:
             x_hat = x_cur + (t_hat ** 2 - t_cur ** 2).sqrt() * S_noise * torch.randn_like(x_cur)
