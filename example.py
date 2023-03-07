@@ -75,7 +75,7 @@ def generate_image_grid(
         x_next = x_hat + (t_next - t_hat) * d_cur
 
         # Apply 2nd order correction.
-        if i % 2 == 0:
+        if i < num_steps - 5:
             denoised = net(x_next, t_next, class_labels).to(torch.float64)
             d_prime = (x_next - denoised) / t_next
             x_next = x_hat + (t_next - t_hat) * (0.5 * d_cur + 0.5 * d_prime)
