@@ -78,9 +78,13 @@ def generate_image_grid(
 
         # Apply 2nd order correction.
         if (i < num_steps - 1 and cyclical is False) or (i < num_steps * 2 // 3 and cyclical is True):
-            scale = adjust_learning_rate(i, total_epoch=num_steps, M=num_steps//2, lr0=S_noise)
+            
             denoised = net(x_next, t_next, class_labels).to(torch.float64)
             d_prime = (x_next - denoised) / t_next
+            if cyclical is True:
+                scale = adjust_learning_rate(i, total_epoch=num_steps, M=num_steps//2, lr0=S_noise)
+            else:
+                scale = 0.5
             x_next = x_hat + (t_next - t_hat) * (scale * d_cur + (1-scale) * d_prime) 
         
 
@@ -100,7 +104,7 @@ def main():
     model_root = 'https://nvlabs-fi-cdn.nvidia.com/edm/pretrained'
     seeds=50000-99999
     generate_image_grid(f'{model_root}/edm-cifar10-32x32-cond-vp.pkl',   'cifar10-32x32.png',  num_steps=18, S_churn=0.0, S_noise=1, cyclical=True, seed=seeds) # FID = 1.79, NFE = 35
-    # generate_image_grid(f'{model_root}/edm-cifar10-32x32-cond-vp.pkl',   'cifar10-32x32.png',  num_steps=18, seed=seeds) # FID = 1.79, NFE = 35
+    generate_image_grid(f'{model_root}/edm-cifar10-32x32-cond-vp.pkl',   'cifar10-32x32.png',  num_steps=18, seed=seeds) # FID = 1.79, NFE = 35
     # generate_image_grid(f'{model_root}/edm-ffhq-64x64-uncond-vp.pkl',    'ffhq-64x64.png',     num_steps=35, S_churn=0.001, S_noise=0.01, cyclical=True, seed=seeds) # FID = 2.39, NFE = 79
     # generate_image_grid(f'{model_root}/edm-ffhq-64x64-uncond-vp.pkl',    'ffhq-64x64.png',     num_steps=35, seed=seeds) # FID = 2.39, NFE = 79
     # generate_image_grid(f'{model_root}/edm-afhqv2-64x64-uncond-vp.pkl',  'afhqv2-64x64.png',   num_steps=35, S_churn=0.001, S_noise=0.01, cyclical=True, seed=seeds) # FID = 1.96, NFE = 79
