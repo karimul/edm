@@ -53,11 +53,9 @@ def edm_sampler(
         t_hat = net.round_sigma(t_cur + gamma * t_cur)
         if cyclical is True:
             # Adaptive step size of noise with cyclical
-            if i in [0, num_steps-1]:
-                x_hat = x_cur + (t_hat ** 2 - t_cur ** 2).sqrt() * S_noise * torch.randn_like(x_cur)
-            else:
-                S_noise_new = adjust_learning_rate(i, total_epoch=num_steps, lr0=S_noise)
-                x_hat = x_cur + S_noise_new * torch.randn_like(x_cur)
+            S_noise_new = adjust_learning_rate(i, total_epoch=num_steps, lr0=S_noise)
+            x_hat = x_cur + S_noise_new * torch.randn_like(x_cur) * (t_hat ** 2 - t_cur ** 2).sqrt()
+            print(f"{(t_hat ** 2 - t_cur ** 2).sqrt()} {S_noise_new}")
         else:
             x_hat = x_cur + (t_hat ** 2 - t_cur ** 2).sqrt() * S_noise * torch.randn_like(x_cur)
 
