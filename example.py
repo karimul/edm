@@ -96,12 +96,12 @@ def generate_image_grid(
 def main():
     model_root = 'https://nvlabs-fi-cdn.nvidia.com/edm/pretrained'
     seeds=50000-99999
-    generate_image_grid(f'{model_root}/edm-cifar10-32x32-cond-vp.pkl',   'cifar10-32x32.png',  num_steps=15, S_churn=0.001, S_noise=0.1, cyclical=True, seed=seeds) # FID = 1.79, NFE = 35
+    generate_image_grid(f'{model_root}/edm-cifar10-32x32-cond-vp.pkl',   'cifar10-32x32.png',  num_steps=18, S_churn=0.001, S_noise=0.1, cyclical=True, seed=seeds) # FID = 1.79, NFE = 35
     generate_image_grid(f'{model_root}/edm-cifar10-32x32-cond-vp.pkl',   'cifar10-32x32.png',  num_steps=18, seed=seeds) # FID = 1.79, NFE = 35
     generate_image_grid(f'{model_root}/edm-ffhq-64x64-uncond-vp.pkl',    'ffhq-64x64.png',     num_steps=35, S_churn=0.001, S_noise=0.01, cyclical=True, seed=seeds) # FID = 2.39, NFE = 79
-    generate_image_grid(f'{model_root}/edm-ffhq-64x64-uncond-vp.pkl',    'ffhq-64x64.png',     num_steps=40, seed=seeds) # FID = 2.39, NFE = 79
+    generate_image_grid(f'{model_root}/edm-ffhq-64x64-uncond-vp.pkl',    'ffhq-64x64.png',     num_steps=35, seed=seeds) # FID = 2.39, NFE = 79
     generate_image_grid(f'{model_root}/edm-afhqv2-64x64-uncond-vp.pkl',  'afhqv2-64x64.png',   num_steps=35, S_churn=0.001, S_noise=0.01, cyclical=True, seed=seeds) # FID = 1.96, NFE = 79
-    generate_image_grid(f'{model_root}/edm-afhqv2-64x64-uncond-vp.pkl',  'afhqv2-64x64.png',   num_steps=40, seed=seeds) # FID = 1.96, NFE = 79
+    generate_image_grid(f'{model_root}/edm-afhqv2-64x64-uncond-vp.pkl',  'afhqv2-64x64.png',   num_steps=35, seed=seeds) # FID = 1.96, NFE = 79
     # generate_image_grid(f'{model_root}/edm-imagenet-64x64-cond-adm.pkl', 'imagenet-64x64.png', num_steps=10, S_noise=0.001, cyclical=True) # FID = 1.36, NFE = 511
     # generate_image_grid(f'{model_root}/edm-imagenet-64x64-cond-adm.pkl', 'imagenet-64x64.png', num_steps=256) # FID = 1.36, NFE = 511
 
