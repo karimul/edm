@@ -75,10 +75,11 @@ def generate_image_grid(
         x_next = x_hat + (t_next - t_hat) * d_cur
 
         # Apply 2nd order correction.
-        if i < num_steps - 5:
+        if (i < num_steps - 1 and cyclical is False) or (i < num_steps//2 and cyclical is True):
             denoised = net(x_next, t_next, class_labels).to(torch.float64)
             d_prime = (x_next - denoised) / t_next
             x_next = x_hat + (t_next - t_hat) * (0.5 * d_cur + 0.5 * d_prime)
+        
 
     # Save image grid.
     dest_path = f"{num_steps}_{cyclical}_{dest_path}"
