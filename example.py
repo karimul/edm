@@ -78,10 +78,10 @@ def generate_image_grid(
 
         # Apply 2nd order correction.
         if (i < num_steps - 1 and cyclical is False) or (i < num_steps * 2 // 3 and cyclical is True):
-            scale = adjust_learning_rate(i, total_epoch=num_steps, lr0=S_noise)
+            scale = adjust_learning_rate(i, total_epoch=num_steps, M=num_steps//2, lr0=S_noise)
             denoised = net(x_next, t_next, class_labels).to(torch.float64)
             d_prime = (x_next - denoised) / t_next
-            x_next = x_hat + (t_next - t_hat) * (0.5 * d_cur + 0.5 * d_prime) * scale
+            x_next = x_hat + (t_next - t_hat) * (scale * d_cur + scale * d_prime) 
         
 
     # Save image grid.
