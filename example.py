@@ -16,7 +16,7 @@ import PIL.Image
 import dnnlib
 
 #----------------------------------------------------------------------------
-def adjust_learning_rate(iter:int, total_epoch:int=100, M:int=3, lr0:float=0.007):
+def adjust_learning_rate(iter:int, total_epoch:int=100, M:int=4, lr0:float=0.007):
     cos_inner = np.pi * (iter % (total_epoch // M))
     cos_inner /= total_epoch // M
     cos_out = np.cos(cos_inner) + 1
@@ -61,15 +61,13 @@ def generate_image_grid(
         # Increase noise temporarily.
         gamma = min(S_churn / num_steps, np.sqrt(2) - 1) if S_min <= t_cur <= S_max else 0
         t_hat = net.round_sigma(t_cur + gamma * t_cur)
-        # if cyclical is True:
-        #     # Adaptive step size of noise with cyclical
-        #     S_noise_new = adjust_learning_rate(i, total_epoch=num_steps, lr0=S_noise)
-        #     x_hat = x_cur + S_noise_new * torch.randn_like(x_cur) * (t_hat ** 2 - t_cur ** 2).sqrt()
-        # else:
-        #     x_hat = x_cur + (t_hat ** 2 - t_cur ** 2).sqrt() * S_noise * torch.randn_like(x_cur)
-
-        x_hat = x_cur + (t_hat ** 2 - t_cur ** 2).sqrt() * S_noise * torch.randn_like(x_cur)
-
+        if cyclical is True:
+            # Adaptive step size of noise with cyclical
+            S_noise_new = adjust_learning_rate(i, total_epoch=num_steps, lr0=S_noise)
+            x_hat = x_cur + S_noise_new * torch.randn_like(x_cur) * (t_hat ** 2 - t_cur ** 2).sqrt()
+            print(f"{(t_hat ** 2 - t_cur ** 2).sqrt()} {S_noise_new} {t_hat} {t_cur}")
+        else:
+            x_hat = x_cur + (t_hat ** 2 - t_cur ** 2).sqrt() * S_noise * torch.randn_like(x_cur)
 
         # Euler step.
         denoised = net(x_hat, t_hat, class_labels).to(torch.float64)
@@ -81,11 +79,7 @@ def generate_image_grid(
             
             denoised = net(x_next, t_next, class_labels).to(torch.float64)
             d_prime = (x_next - denoised) / t_next
-            if cyclical is True:
-                scale = adjust_learning_rate(i, total_epoch=num_steps, M=num_steps//3, lr0=S_noise)
-            else:
-                scale = 0.5
-            x_next = x_hat + (t_next - t_hat) * (scale * d_cur + (1-scale) * d_prime) 
+            x_next = x_hat + (t_next - t_hat) * (0.5 * d_cur + 0.5 * d_prime) 
         
 
     # Save image grid.
