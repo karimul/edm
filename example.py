@@ -65,7 +65,7 @@ def generate_image_grid(
             # Adaptive step size of noise with cyclical
             S_noise_new = adjust_learning_rate(i, total_epoch=num_steps, lr0=S_noise)
             x_hat = x_cur + S_noise_new * torch.randn_like(x_cur) * (t_hat ** 2 - t_cur ** 2).sqrt()
-            print(f"{(t_hat ** 2 - t_cur ** 2).sqrt()} {S_noise_new} {t_hat} {t_cur}")
+            # print(f"{(t_hat ** 2 - t_cur ** 2).sqrt()} {S_noise_new} {t_hat} {t_cur}")
         else:
             x_hat = x_cur + (t_hat ** 2 - t_cur ** 2).sqrt() * S_noise * torch.randn_like(x_cur)
 
@@ -75,8 +75,7 @@ def generate_image_grid(
         x_next = x_hat + (t_next - t_hat) * d_cur
 
         # Apply 2nd order correction.
-        if (i < num_steps - 1 and cyclical is False) or (i < num_steps - 1 and cyclical is True):
-            
+        if i < num_steps - 1:
             denoised = net(x_next, t_next, class_labels).to(torch.float64)
             d_prime = (x_next - denoised) / t_next
             x_next = x_hat + (t_next - t_hat) * (0.5 * d_cur + 0.5 * d_prime) 
@@ -97,7 +96,7 @@ def generate_image_grid(
 def main():
     model_root = 'https://nvlabs-fi-cdn.nvidia.com/edm/pretrained'
     seeds=50000-99999
-    generate_image_grid(f'{model_root}/edm-cifar10-32x32-cond-vp.pkl',   'cifar10-32x32.png',  num_steps=18, S_churn=0.01, S_noise=0.001, cyclical=True, seed=seeds, sigma_max=50) # FID = 1.79, NFE = 35
+    generate_image_grid(f'{model_root}/edm-cifar10-32x32-cond-vp.pkl',   'cifar10-32x32.png',  num_steps=18, S_churn=0.1, S_noise=0.001, cyclical=True, seed=seeds, sigma_max=50) # FID = 1.79, NFE = 35
     generate_image_grid(f'{model_root}/edm-cifar10-32x32-cond-vp.pkl',   'cifar10-32x32.png',  num_steps=18, seed=seeds) # FID = 1.79, NFE = 35
     # generate_image_grid(f'{model_root}/edm-ffhq-64x64-uncond-vp.pkl',    'ffhq-64x64.png',     num_steps=35, S_churn=0.001, S_noise=0.01, cyclical=True, seed=seeds) # FID = 2.39, NFE = 79
     # generate_image_grid(f'{model_root}/edm-ffhq-64x64-uncond-vp.pkl',    'ffhq-64x64.png',     num_steps=35, seed=seeds) # FID = 2.39, NFE = 79
