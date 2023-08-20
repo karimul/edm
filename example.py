@@ -16,7 +16,7 @@ import PIL.Image
 import dnnlib
 
 #----------------------------------------------------------------------------
-def adjust_learning_rate(iter:int, total_epoch:int=100, M:int=4, lr0:float=0.007):
+def adjust_learning_rate(iter:int, total_epoch:int=100, M:int=3, lr0:float=0.007):
     cos_inner = np.pi * (iter % (total_epoch // M))
     cos_inner /= total_epoch // M
     cos_out = np.cos(cos_inner) + 1
@@ -55,7 +55,7 @@ def generate_image_grid(
 
     # Main sampling loop.
     x_next = latents.to(torch.float64) * t_steps[0]
-    total_epochs = len(list(enumerate(zip(t_steps[:-1], t_steps[1:]))))
+    total_epochs = len(list(enumerate(zip(t_steps[:-1], t_steps[1:]))))**2
     print("total epoch:", total_epochs)
     for i, (t_cur, t_next) in tqdm.tqdm(list(enumerate(zip(t_steps[:-1], t_steps[1:]))), unit='step'): # 0, ..., N-1
         x_cur = x_next
