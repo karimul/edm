@@ -24,7 +24,7 @@ subprocess.run("torchrun --standalone --nproc_per_node=1 generate.py --outdir=fi
 subprocess.run("torchrun --standalone --nproc_per_node=1 fid.py calc --images=fid-tmp \
     --ref=https://nvlabs-fi-cdn.nvidia.com/edm/fid-refs/cifar10-32x32.npz", shell=True, check=True, stdout=f)
 
-# 15
+# 8
 subprocess.run("rm -rf fid-tmp/", shell=True, check=True)
 subprocess.run("torchrun --standalone --nproc_per_node=1 generate.py --outdir=fid-tmp --seeds=0-49999 --subdirs \
     --network=https://nvlabs-fi-cdn.nvidia.com/edm/pretrained/edm-cifar10-32x32-cond-ve.pkl \
