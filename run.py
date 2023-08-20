@@ -92,6 +92,7 @@ subprocess.run("torchrun --standalone --nproc_per_node=1 fid.py calc --images=fi
 f.close()
 
 # ImageNet
+f = open("output_edm-imagenet-64x64-cond-adm.txt", "w")
 subprocess.run("rm -rf fid-tmp/", shell=True, check=True)
 subprocess.run("torchrun --standalone --nproc_per_node=1 generate.py --outdir=fid-tmp --seeds=0-49999 --subdirs \
     --network=https://nvlabs-fi-cdn.nvidia.com/edm/pretrained/edm-imagenet-64x64-cond-adm.pkl \
@@ -189,6 +190,7 @@ f.close()
 # f.close()
 
 # # ImageNet
+#f = open("output_edm-imagenet-64x64-cond-adm.txt", "w")
 # subprocess.run("rm -rf fid-tmp/", shell=True, check=True)
 # subprocess.run("torchrun --standalone --nproc_per_node=1 generate.py --outdir=fid-tmp --seeds=0-49999 --subdirs \
 #     --network=https://nvlabs-fi-cdn.nvidia.com/edm/pretrained/edm-imagenet-64x64-cond-adm.pkl \
