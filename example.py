@@ -55,7 +55,8 @@ def generate_image_grid(
 
     # Main sampling loop.
     x_next = latents.to(torch.float64) * t_steps[0]
-    total_epochs = len(zip(t_steps[:-1], t_steps[1:]))
+    total_epochs = len(list(enumerate(zip(t_steps[:-1], t_steps[1:]))))
+    print("total epoch:", total_epochs)
     for i, (t_cur, t_next) in tqdm.tqdm(list(enumerate(zip(t_steps[:-1], t_steps[1:]))), unit='step'): # 0, ..., N-1
         x_cur = x_next
 
