@@ -55,6 +55,7 @@ def generate_image_grid(
 
     # Main sampling loop.
     x_next = latents.to(torch.float64) * t_steps[0]
+    total_epochs = len(zip(t_steps[:-1], t_steps[1:]))
     for i, (t_cur, t_next) in tqdm.tqdm(list(enumerate(zip(t_steps[:-1], t_steps[1:]))), unit='step'): # 0, ..., N-1
         x_cur = x_next
 
@@ -63,8 +64,9 @@ def generate_image_grid(
         t_hat = net.round_sigma(t_cur + gamma * t_cur)
         if cyclical is True:
             # Adaptive step size of noise with cyclical
-            S_noise_new = adjust_learning_rate(i, total_epoch=num_steps, lr0=S_noise)
-            x_hat = x_cur + S_noise_new * torch.randn_like(x_cur) * (t_hat ** 2 - t_cur ** 2).sqrt()
+            S_noise_new = adjust_learning_rate(i, total_epoch=total_epochs, lr0=S_noise)
+            x_hat = x_cur + S_noise_new * torch.randn_like(x_cur) 
+            # x_hat = x_cur + S_noise_new * torch.randn_like(x_cur) * (t_hat ** 2 - t_cur ** 2).sqrt()
             # print(f"{(t_hat ** 2 - t_cur ** 2).sqrt()} {S_noise_new} {t_hat} {t_cur}")
         else:
             x_hat = x_cur + (t_hat ** 2 - t_cur ** 2).sqrt() * S_noise * torch.randn_like(x_cur)
@@ -96,8 +98,10 @@ def generate_image_grid(
 def main():
     model_root = 'https://nvlabs-fi-cdn.nvidia.com/edm/pretrained'
     seeds=50000-99999
-    generate_image_grid(f'{model_root}/edm-cifar10-32x32-cond-vp.pkl',   'cifar10-32x32.png',  num_steps=18, S_churn=0.1, S_noise=0.001, cyclical=True, seed=seeds, sigma_max=50) # FID = 1.79, NFE = 35
-    generate_image_grid(f'{model_root}/edm-cifar10-32x32-cond-vp.pkl',   'cifar10-32x32.png',  num_steps=18, seed=seeds) # FID = 1.79, NFE = 35
+    generate_image_grid(f'{model_root}/edm-cifar10-32x32-cond-ve.pkl',   '5_cifar10-32x32.png',  num_steps=3, S_noise=0.0001, cyclical=True, seed=seeds) # FID = 1.79, NFE = 35
+    generate_image_grid(f'{model_root}/edm-cifar10-32x32-cond-ve.pkl',   '15_cifar10-32x32.png',  num_steps=8, S_noise=0.0001, cyclical=True, seed=seeds) # FID = 1.79, NFE = 35
+    generate_image_grid(f'{model_root}/edm-cifar10-32x32-cond-ve.pkl',   '25_cifar10-32x32.png',  num_steps=13, S_noise=0.0001, cyclical=True, seed=seeds) # FID = 1.79, NFE = 35
+    generate_image_grid(f'{model_root}/edm-cifar10-32x32-cond-ve.pkl',   '35_cifar10-32x32.png',  num_steps=18, S_noise=0.0001, cyclical=True, seed=seeds) # FID = 1.79, NFE = 35
     # generate_image_grid(f'{model_root}/edm-ffhq-64x64-uncond-vp.pkl',    'ffhq-64x64.png',     num_steps=35, S_churn=0.001, S_noise=0.01, cyclical=True, seed=seeds) # FID = 2.39, NFE = 79
     # generate_image_grid(f'{model_root}/edm-ffhq-64x64-uncond-vp.pkl',    'ffhq-64x64.png',     num_steps=35, seed=seeds) # FID = 2.39, NFE = 79
     # generate_image_grid(f'{model_root}/edm-afhqv2-64x64-uncond-vp.pkl',  'afhqv2-64x64.png',   num_steps=35, S_churn=0.001, S_noise=0.01, cyclical=True, seed=seeds) # FID = 1.96, NFE = 79
