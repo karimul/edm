@@ -89,6 +89,7 @@ class IPR():
             if input.endswith('.npz'):  # input is precalculated file
                 print('loading', input)
                 f = np.load(input)
+                print("debug: ",isinstance(f, np.ndarray))
                 feats = f['feature']
                 radii = f['radii']
                 f.close()
