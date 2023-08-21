@@ -2,7 +2,7 @@ import os, torch
 import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
-
+from glob import glob
 from PIL import Image
 import matplotlib.pyplot as plt
 import torchvision.transforms as transforms
@@ -91,13 +91,14 @@ class ImageDataset(Dataset):
 
         data_size = data_size - data_size%batch_size
 
-        self.img_paths = []
+        self.img_paths = glob(os.path.join(dir_path, '**', '*.jpg'), recursive=True) + \
+            glob(os.path.join(dir_path, '**', '*.png'), recursive=True)
 
-        for i, img_name in enumerate(os.listdir(dir_path)):
-            if i >= data_size:
-                break
-            img_path = os.path.join(dir_path, img_name)
-            self.img_paths.append(img_path)
+        # for i, img_name in enumerate(os.listdir(dir_path)):
+        #     if i >= data_size:
+        #         break
+        #     img_path = os.path.join(dir_path, img_name)
+        #     self.img_paths.append(img_path)
 
         self.imsize = 224 # for vgg input size
 
